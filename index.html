@@ -3,23 +3,88 @@
 <head>
     <title>Be My Valentine?</title>
     <style>
-        body { text-align: center; font-family: sans-serif; margin-top: 50px; }
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-family: sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            /* subtle soft background for pre-valentine pages */
+            background: linear-gradient(180deg,#fff7fb 0%, #fff0f4 100%);
+        }
         .hidden { display: none; }
+        /* Text block used for centered, attractive headings */
+        .text-block {
+            display: block;
+            max-width: 880px;
+            padding: 18px 26px;
+            margin: 8px auto;
+            background: rgba(255,255,255,0.92);
+            color: #3a0222;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(20,10,20,0.08);
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.35;
+            letter-spacing: 0.4px;
+            text-align: center;
+        }
+        /* darker variant for valentine mood */
+        body.valentine .text-block {
+            background: rgba(255,255,255,0.04);
+            color: #fff6f8;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+            border-radius: 10px;
+        }
         button { padding: 10px 20px; font-size: 18px; cursor: pointer; margin: 10px; }
         #yesBtn { background-color: #ff4d6d; color: white; border: none; border-radius: 5px; }
+        #question-section, #success-section { max-width: 900px; width: 100%; }
+        #question-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .button-group { display: flex; gap: 16px; justify-content: center; }
+        button[disabled] { opacity: 0.5; cursor: not-allowed; }
+        .choice-button { padding: 8px 14px; border: 1px solid #ccc; border-radius: 6px; background: white; }
+        .choice-button.selected { background: #ffefef; border-color: #ff4d6d; }
+        .food-option { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .food-img { width: 160px; height: 110px; object-fit: cover; border-radius: 8px; border: 1px solid #eee; }
+        .handsome-btn { min-width: 120px; height: 44px; font-size: 18px; border-radius: 6px; }
+        /* Valentine cinematic styles (darker, more dramatic) */
+        body.valentine {
+            background: radial-gradient(circle at 10% 10%, rgba(255,240,246,0.06) 0%, transparent 20%),
+                        linear-gradient(180deg,#2a0a15 0%, #3b0f1f 40%, #4d1628 100%);
+            transition: background 0.6s ease;
+            color: #fff8f9;
+        }
+        .valentine .val-heading { font-family: 'Georgia', serif; font-size: 40px; color: #ffeef6; letter-spacing: 0.8px; max-width: 940px; text-shadow: 0 6px 18px rgba(0,0,0,0.6); }
+        .val-heading .char { display:inline-block; opacity:0; transform: translateY(22px) scale(0.96); }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .val-heading .char { animation-name: fadeInUp; animation-duration: 680ms; animation-fill-mode: forwards; animation-timing-function: cubic-bezier(.22,.9,.32,1); }
+        .val-heading .nowrap { display:inline-block; white-space:nowrap; }
+        .val-heading .space { display:inline-block; width: 18px; }
     </style>
 </head>
 <body>
 
-    <div id="question-section">
-        <h1 id="text-prompt">Would you be my valentine? ❤️</h1>
-        <button id="yesBtn" onclick="sayYes()">Yes</button>
-        <button id="noBtn" onclick="sayNo()">No</button>
+    <div id="landing-section">
+        <h1 class="text-block">Would you be willing to answer this questionnaire?</h1>
+        <div class="button-group">
+            <button id="landingYer" onclick="startQuestionnaire()">Yes</button>
+            <button id="landingNo" disabled>No</button>
+        </div>
     </div>
 
     <div id="success-section" class="hidden">
-        <h1>Yay! See you then! 😍</h1>
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJpbmZ6Z3p4eXF4ZzZ4ZzZ4ZzZ4ZzZ4ZzZ4ZzZ4ZzZ4ZzZ4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/l0HlvU6gUI0PqyJmE/giphy.gif" alt="Love GIF">
+        <h1 class="text-block subtle">I will see you then, Love 🫶</h1>
+        <img src="https://c.tenor.com/ngOkyNrtc3L.gif" alt="Bubu and Dudu holding hands">
     </div>
 
     <script>
@@ -43,15 +108,395 @@
         }
 
         function sayYes() {
-            document.getElementById('question-section').classList.add('hidden');
+            const q = document.getElementById('question-section');
+            if (q) q.remove();
             document.getElementById('success-section').classList.remove('hidden');
         }
+
+        function startQuestionnaire() {
+            // Hide landing
+            document.getElementById('landing-section').classList.add('hidden');
+
+            // Create the "Are you free 14th of February?" section
+            const f = document.createElement('div');
+            f.id = 'free-section';
+            f.style.display = 'flex';
+            f.style.flexDirection = 'column';
+            f.style.alignItems = 'center';
+            f.style.gap = '20px';
+
+            f.innerHTML = `
+                <h1 id="free-prompt" class="text-block">Are you free 14th of February?</h1>
+                <div class="button-group">
+                    <button id="freeYes">Yes</button>
+                    <button id="freeNo">No</button>
+                </div>
+            `;
+
+            const success = document.getElementById('success-section');
+            success.parentNode.insertBefore(f, success);
+
+            const yes = document.getElementById('freeYes');
+            const no = document.getElementById('freeNo');
+
+            // Logical handlers (kept separate from visible labels)
+            const proceedToFoodChoice = () => {
+                // remove free section and show food-choice section
+                const free = document.getElementById('free-section');
+                if (free) free.remove();
+                createFoodSection();
+            };
+            const doNothing = () => {};
+
+            // assign handler references on the elements so we can swap them
+            yes._handler = proceedToFoodChoice;
+            no._handler = doNothing;
+            yes.onclick = yes._handler;
+            no.onclick = no._handler;
+
+            let swapped = false;
+            function swapHandlersAndLabels() {
+                // swap visible labels
+                const t = yes.innerText;
+                yes.innerText = no.innerText;
+                no.innerText = t;
+
+                // swap handler references
+                const th = yes._handler;
+                yes._handler = no._handler;
+                no._handler = th;
+
+                // reassign onclick
+                yes.onclick = yes._handler;
+                no.onclick = no._handler;
+
+                swapped = !swapped;
+            }
+
+            // Hovering over the No button toggles the labels and handlers
+            no.addEventListener('mouseenter', () => {
+                if (!swapped) swapHandlersAndLabels();
+            });
+            no.addEventListener('mouseleave', () => {
+                if (swapped) swapHandlersAndLabels();
+            });
+        }
+
+        function createValentineSection() {
+            // add valentine background class
+            document.body.classList.add('valentine');
+
+            const q = document.createElement('div');
+            q.id = 'question-section';
+            q.style.display = 'flex';
+            q.style.flexDirection = 'column';
+            q.style.alignItems = 'center';
+            q.style.gap = '24px';
+
+            // build cinematic heading split into three parts with breath pauses
+            const heading = document.createElement('h1');
+            heading.className = 'val-heading';
+            const parts = [
+                'So...',
+                'for the last question...',
+                'May I be yours this Valentine, Luci?'
+            ];
+
+            const perChar = 80; // ms per character for dramatic pacing
+            const pauseBetween = [700, 900]; // ms pauses between part1->part2 and part2->part3
+
+            let cumulative = 0;
+            for (let p = 0; p < parts.length; p++) {
+                const part = parts[p];
+                // Special handling: keep the word 'yours' unbreakable
+                const special = 'yours';
+                const lower = part.toLowerCase();
+                const specialIndex = lower.indexOf(special);
+                for (let i = 0; i < part.length; i++) {
+                    if (specialIndex !== -1 && i === specialIndex) {
+                        // wrap the whole word in a no-wrap container
+                        const wrap = document.createElement('span');
+                        wrap.className = 'nowrap';
+                        for (let j = 0; j < special.length; j++) {
+                            const ch = document.createElement('span');
+                            ch.className = 'char';
+                            ch.textContent = part[i + j];
+                            const delayMs = cumulative + (i + j) * perChar;
+                            ch.style.animationDelay = `${delayMs}ms`;
+                            wrap.appendChild(ch);
+                        }
+                        heading.appendChild(wrap);
+                        i += special.length - 1; // skip over processed letters
+                        continue;
+                    }
+                    const ch = document.createElement('span');
+                    const isSpace = part[i] === ' ';
+                    ch.className = isSpace ? 'char space' : 'char';
+                    ch.textContent = part[i];
+                    const delayMs = cumulative + i * perChar;
+                    ch.style.animationDelay = `${delayMs}ms`;
+                    heading.appendChild(ch);
+                }
+                // after each part add a small space (non-breaking) except last
+                if (p < parts.length - 1) {
+                    const spacer = document.createElement('span');
+                    spacer.className = 'char space';
+                    spacer.textContent = ' ';
+                    spacer.style.animationDelay = `${cumulative + part.length * perChar}ms`;
+                    heading.appendChild(spacer);
+                    cumulative += part.length * perChar + pauseBetween[p];
+                } else {
+                    cumulative += part.length * perChar;
+                }
+            }
+
+            const btnGroup = document.createElement('div');
+            btnGroup.className = 'button-group';
+            // hide buttons initially until animation completes
+            btnGroup.style.display = 'flex';
+            btnGroup.style.opacity = '0';
+            btnGroup.style.pointerEvents = 'none';
+
+            const yes = document.createElement('button'); yes.id = 'yesBtn'; yes.textContent = 'Yes';
+            const no = document.createElement('button'); no.id = 'noBtn'; no.textContent = 'No';
+            btnGroup.appendChild(yes); btnGroup.appendChild(no);
+
+            q.appendChild(heading);
+            q.appendChild(btnGroup);
+
+            const success = document.getElementById('success-section');
+            success.parentNode.insertBefore(q, success);
+
+            // compute total animation time: cumulative (from above) + animation duration
+            const animationDuration = 680; // ms, matches CSS
+            const totalMs = cumulative + animationDuration + 300; // small extra buffer
+
+            // after the cinematic reveal, fade in the buttons
+            setTimeout(() => {
+                btnGroup.style.transition = 'opacity 420ms ease, transform 420ms ease';
+                btnGroup.style.transform = 'translateY(0)';
+                btnGroup.style.opacity = '1';
+                btnGroup.style.pointerEvents = 'auto';
+            }, totalMs);
+
+            yes.addEventListener('click', sayYes);
+            no.addEventListener('click', () => {
+                // Turn the page black with a smooth fade
+                blackoutPage();
+            });
+        }
+
+        function blackoutPage() {
+            // Prevent multiple overlays
+            if (document.getElementById('blackout')) return;
+            const overlay = document.createElement('div');
+            overlay.id = 'blackout';
+            overlay.style.position = 'fixed';
+            overlay.style.left = '0';
+            overlay.style.top = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.background = '#000';
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 420ms ease';
+            overlay.style.zIndex = '99999';
+            document.body.appendChild(overlay);
+            // hide existing content underneath visually
+            Array.from(document.body.children).forEach(child => {
+                if (child !== overlay) child.style.filter = 'blur(2px)';
+            });
+            requestAnimationFrame(() => overlay.style.opacity = '1');
+        }
+
+        function createFoodSection() {
+            const f = document.createElement('div');
+            f.id = 'food-section';
+            f.style.display = 'flex';
+            f.style.flexDirection = 'column';
+            f.style.alignItems = 'center';
+            f.style.gap = '20px';
+
+            f.innerHTML = `
+                <h1 id="food-prompt" class="text-block">What kind of food would you like to eat on that day?</h1>
+                <div class="button-group" id="food-options">
+                    <button class="choice-button" data-food="Czech">Traditional Czech</button>
+                    <button class="choice-button" data-food="Korean">Korean</button>
+                    <button class="choice-button" data-food="Italian">Italian</button>
+                    <button class="choice-button" data-food="Vietnamese">Vietnamese</button>
+                </div>
+                <div class="button-group">
+                    <button id="foodConfirm" disabled>Confirm</button>
+                </div>
+            `;
+
+            const success = document.getElementById('success-section');
+            success.parentNode.insertBefore(f, success);
+
+            const options = f.querySelectorAll('.choice-button');
+            let selected = null;
+            const confirmBtn = document.getElementById('foodConfirm');
+
+            options.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // mark selected
+                    options.forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    selected = btn.getAttribute('data-food');
+                    confirmBtn.disabled = false;
+                });
+            });
+
+            confirmBtn.addEventListener('click', () => {
+                if (!selected) return;
+                const foodSection = document.getElementById('food-section');
+                if (foodSection) foodSection.remove();
+                // proceed to the 'handsome' question before the valentine prompt
+                createHandsomeSection();
+            });
+        }
+
+        function createHandsomeSection() {
+            const h = document.createElement('div');
+            h.id = 'handsome-section';
+            h.style.display = 'flex';
+            h.style.flexDirection = 'column';
+            h.style.alignItems = 'center';
+            h.style.gap = '16px';
+            h.style.position = 'relative';
+
+            h.innerHTML = `
+                <h1 id="handsome-prompt" class="text-block">Do you find this guy handsome?</h1>
+                <img id="handsome-img" src="Images/1 valen.jpg" alt="Valentine" style="max-width:300px; border-radius:8px;" />
+                <div class="button-group" id="handsome-buttons" style="gap:24px; align-items:center; justify-content:center;">
+                    <button id="handsomeYes" class="handsome-btn">Yes</button>
+                    <button id="handsomeNo" class="handsome-btn">No</button>
+                </div>
+            `;
+
+            const success = document.getElementById('success-section');
+            success.parentNode.insertBefore(h, success);
+
+            const yes = document.getElementById('handsomeYes');
+            const no = document.getElementById('handsomeNo');
+
+            // Ensure both buttons visually match size
+            yes.classList.add('handsome-btn');
+            no.classList.add('handsome-btn');
+
+            // Place No as fixed so it can run across the whole viewport
+            no.style.position = 'fixed';
+            no.style.transition = 'left 0.12s ease, top 0.12s ease';
+
+            // After layout is ready, place No immediately to the right of Yes (centered under image)
+            requestAnimationFrame(() => {
+                const yesRect = yes.getBoundingClientRect();
+                const noRect = no.getBoundingClientRect();
+                const spacing = 16;
+                let initLeft = yesRect.right + spacing;
+                let initTop = yesRect.top;
+                // if not enough room on the right, place No to the left of Yes
+                if (initLeft + noRect.width > window.innerWidth - 10) {
+                    initLeft = Math.max(10, yesRect.left - spacing - noRect.width);
+                }
+                // Ensure both buttons visually match size
+                yes.classList.add('handsome-btn');
+                no.classList.add('handsome-btn');
+
+                // No starts in the normal flow so both are centered under the image
+                no.style.position = 'static';
+                no.style.transition = 'left 0.12s ease, top 0.12s ease';
+
+                // Yes proceeds to the 'Seriously??' page
+                yes.addEventListener('click', () => {
+                    // cleanup
+                    document.removeEventListener('mousemove', onMove);
+                    const hs = document.getElementById('handsome-section');
+                    if (hs) hs.remove();
+                    createBlindPage();
+                });
+
+                // Evade logic: move No only when cursor is near; stop when cursor leaves; disappear after 6s total chase
+                let chaseStart = null;
+                let totalChase = 0;
+                let removed = false;
+                const threshold = 140; // px
+
+                function onMove(e) {
+                    if (removed) return;
+                    const rect = no.getBoundingClientRect();
+                    const dx = e.clientX - (rect.left + rect.width / 2);
+                    const dy = e.clientY - (rect.top + rect.height / 2);
+                    const dist = Math.hypot(dx, dy);
+
+                    if (dist < threshold) {
+                        // start or continue chase timer
+                        if (!chaseStart) chaseStart = Date.now();
+
+                        // switch No to fixed so it can move freely
+                        if (no.style.position !== 'fixed') no.style.position = 'fixed';
+
+                        // move No to a new random location away from cursor
+                        const padding = 10;
+                        const maxX = Math.max(0, window.innerWidth - rect.width - padding);
+                        const maxY = Math.max(0, window.innerHeight - rect.height - padding);
+                        // attempt to move away from cursor by biasing opposite direction
+                        let newLeft = Math.random() * maxX + padding;
+                        let newTop = Math.random() * maxY + padding;
+                        no.style.left = `${newLeft}px`;
+                        no.style.top = `${newTop}px`;
+
+                        const elapsed = totalChase + (Date.now() - chaseStart);
+                        if (elapsed > 6000) {
+                            no.remove();
+                            removed = true;
+                            document.removeEventListener('mousemove', onMove);
+                            // proceed to blind-check page after No disappears
+                            createBlindPage();
+                        }
+                    } else {
+                        // stop counting chase time
+                        if (chaseStart) {
+                            totalChase += Date.now() - chaseStart;
+                            chaseStart = null;
+                        }
+                    }
+                }
+
+                document.addEventListener('mousemove', onMove);
+            }); // end requestAnimationFrame
+        } // end createHandsomeSection
+
+        function createBlindPage() {
+            const b = document.createElement('div');
+            b.id = 'blind-section';
+            b.style.display = 'flex';
+            b.style.flexDirection = 'column';
+            b.style.alignItems = 'center';
+            b.style.gap = '20px';
+
+            b.innerHTML = `
+                <h1 class="text-block">Seriously?? I advise you to check your optometrist, cause you might be blind, girl.</h1>
+                <div class="button-group">
+                    <button id="blindNext">Next</button>
+                </div>
+            `;
+
+            const success = document.getElementById('success-section');
+            success.parentNode.insertBefore(b, success);
+
+            document.getElementById('blindNext').addEventListener('click', () => {
+                const bs = document.getElementById('blind-section');
+                if (bs) bs.remove();
+                createValentineSection();
+            });
+        }
+
     </script>
     <style>
-    /* Crucial for the movement to work */
+    /* Keep the No button inline by default so it centers with the Yes button */
     #noBtn {
-        position: absolute;
-        transition: 0.1s; /* Makes the jump look smoother */
+        position: static;
+        transition: 0.1s;
     }
     
     .container {
@@ -59,7 +504,7 @@
         height: 100vh;
         width: 100%;
     }
-</style>
+    </style>
 
 <!-- <script>
     const noBtn = document.getElementById('noBtn');
